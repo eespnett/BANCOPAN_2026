@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css"; 
+
+
+:root {
+  --pan-blue: #00A3E0;
+  --pan-blue-dark: #007AB0;
+  --pan-text: #0F172A;
+  --pan-muted: #64748B;
+  --pan-bg: #F6F9FC;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--pan-bg);
+  color: var(--pan-text);
+}

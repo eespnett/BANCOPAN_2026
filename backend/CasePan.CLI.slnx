@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="CasePan.Api/CasePan.Api.csproj" />
+  <Project Path="CasePan.Application/CasePan.Application.csproj" />
+  <Project Path="CasePan.Domain/CasePan.Domain.csproj" />
+  <Project Path="CasePan.Infrastructure/CasePan.Infrastructure.csproj" />
+  <Project Path="CasePan.Tests.Integration/CasePan.Tests.Integration.csproj" />
+  <Project Path="CasePan.Tests.Unit/CasePan.Tests.Unit.csproj" />
+</Solution>

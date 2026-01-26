@@ -1,0 +1,194 @@
+<main class="page">
+  <header class="hero">
+    <div class="hero__content">
+      <div class="hero__left">
+        <div class="hero__kicker">Teste para o cargo de</div>
+        <h1 class="hero__title">.NET | CASE ENGENHARIA DE SOFTWARE SR</h1>
+        <div class="hero__subtitle">BANCO PAN</div>
+
+        <div class="hero__person">
+          <div class="hero__name">EDER SOUSA</div>
+
+          <a
+            class="hero__cta"
+            href="https://wa.me/5511962102709"
+            target="_blank"
+            rel="noopener"
+            aria-label="Abrir conversa no WhatsApp"
+          >
+            <i class="pi pi-whatsapp"></i>
+            (11) 96210-2709
+          </a>
+        </div>
+
+        <div class="hero__links">
+          <a
+            class="icon-link"
+            href="https://www.linkedin.com/in/eder-sousa-esp%C3%ADrito-santo-8b5b4738/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Abrir LinkedIn"
+          >
+            <i class="pi pi-linkedin"></i>
+            LinkedIn
+          </a>
+
+          <a
+            class="icon-link"
+            href="https://www.sousait.net/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Abrir site"
+          >
+            <i class="pi pi-globe"></i>
+            sousait.net
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__right" aria-hidden="true">
+        <div class="pan-badge">
+          <div class="pan-mark">p</div>
+          <div class="pan-text">Banco PAN</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="container">
+    <p class="intro">
+      Esta tela é um ponto de partida para consumir a API do CasePan.
+      Certifique-se de que o backend esteja rodando (porta 5284 no modo HTTP).
+    </p>
+
+    <div
+      *ngIf="notice"
+      class="notice"
+      [class.notice--success]="notice.type === 'success'"
+      [class.notice--error]="notice.type === 'error'"
+      [class.notice--info]="notice.type === 'info'"
+    >
+      <div class="notice__text">{{ notice.text }}</div>
+      <button
+        type="button"
+        class="notice__close"
+        (click)="clearNotice()"
+        aria-label="Fechar"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div class="grid">
+      <!-- Pessoa Física -->
+      <section class="card">
+        <h2>Pessoa Física</h2>
+
+        <form [formGroup]="pfForm" (ngSubmit)="criarPF()">
+          <label>Nome</label>
+          <input formControlName="nome" placeholder="Ex: Maria Silva" />
+
+          <label>CPF</label>
+          <input formControlName="cpf" placeholder="Somente números (11 dígitos)" inputmode="numeric" />
+
+          <label>CEP</label>
+          <div class="row">
+            <input formControlName="cep" placeholder="Ex: 01001-000" inputmode="numeric" />
+            <button
+              type="button"
+              class="btn btn-outline"
+              (click)="buscarEnderecoPF()"
+              [disabled]="loadingCepPf"
+            >
+              Buscar CEP
+            </button>
+          </div>
+
+          <div class="cep-preview" *ngIf="pfCepInfo">
+            {{ pfCepInfo.logradouro }} - {{ pfCepInfo.bairro }} - {{ pfCepInfo.localidade }}/{{ pfCepInfo.uf }}
+          </div>
+
+          <label>Número</label>
+          <input formControlName="numero" placeholder="Ex: 123" inputmode="numeric" />
+
+          <label>Complemento</label>
+          <input formControlName="complemento" placeholder="Opcional" />
+
+          <button class="btn btn-primary" type="submit" [disabled]="loadingPf">
+            {{ loadingPf ? 'Cadastrando...' : 'Cadastrar PF' }}
+          </button>
+        </form>
+
+        <div class="list">
+          <h3>Lista ({{ pessoasFisicas.length }})</h3>
+
+          <div *ngIf="pessoasFisicas.length === 0" class="muted">
+            Nenhuma Pessoa Física cadastrada.
+          </div>
+
+          <div *ngFor="let p of pessoasFisicas" class="list-item">
+            <div class="list-item__title">{{ p.nome }}</div>
+            <div class="list-item__meta">
+              CPF: {{ p.cpf }} | EnderecoId: {{ p.enderecoId }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pessoa Jurídica -->
+      <section class="card">
+        <h2>Pessoa Jurídica</h2>
+
+        <form [formGroup]="pjForm" (ngSubmit)="criarPJ()">
+          <label>Razão Social</label>
+          <input formControlName="razaoSocial" placeholder="Ex: Empresa X Ltda" />
+
+          <label>CNPJ</label>
+          <input formControlName="cnpj" placeholder="Somente números (14 dígitos)" inputmode="numeric" />
+
+          <label>CEP</label>
+          <div class="row">
+            <input formControlName="cep" placeholder="Ex: 01001-000" inputmode="numeric" />
+            <button
+              type="button"
+              class="btn btn-outline"
+              (click)="buscarEnderecoPJ()"
+              [disabled]="loadingCepPj"
+            >
+              Buscar CEP
+            </button>
+          </div>
+
+          <div class="cep-preview" *ngIf="pjCepInfo">
+            {{ pjCepInfo.logradouro }} - {{ pjCepInfo.bairro }} - {{ pjCepInfo.localidade }}/{{ pjCepInfo.uf }}
+          </div>
+
+          <label>Número</label>
+          <input formControlName="numero" placeholder="Ex: 123" inputmode="numeric" />
+
+          <label>Complemento</label>
+          <input formControlName="complemento" placeholder="Opcional" />
+
+          <button class="btn btn-primary" type="submit" [disabled]="loadingPj">
+            {{ loadingPj ? 'Cadastrando...' : 'Cadastrar PJ' }}
+          </button>
+        </form>
+
+        <div class="list">
+          <h3>Lista ({{ pessoasJuridicas.length }})</h3>
+
+          <div *ngIf="pessoasJuridicas.length === 0" class="muted">
+            Nenhuma Pessoa Jurídica cadastrada.
+          </div>
+
+          <div *ngFor="let p of pessoasJuridicas" class="list-item">
+            <div class="list-item__title">{{ p.razaoSocial }}</div>
+            <div class="list-item__meta">
+              CNPJ: {{ p.cnpj }} | EnderecoId: {{ p.enderecoId }}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
