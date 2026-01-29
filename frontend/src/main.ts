@@ -1,5 +1,4 @@
-// Angular (nesta configuração) precisa do Zone.js em runtime.
-// Sem este import, a aplicação compila e sobe, mas quebra no navegador (NG0908).
+ 
 import 'zone.js';
 
 import { bootstrapApplication } from '@angular/platform-browser';

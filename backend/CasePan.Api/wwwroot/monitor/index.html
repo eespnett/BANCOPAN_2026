@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CasePan - Monitor (SQS + File)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <h2>CasePan - Monitor (LocalStack SQS + File Log)</h2>
+
+  <div class="card">
+    <b>Fila (SQS)</b>
+    <div id="q"></div>
+  </div>
+
+  <div class="card">
+    <b>Arquivo (NDJSON)</b>
+    <div id="f"></div>
+  </div>
+
+  <div class="card">
+    <b>Última mensagem (sample)</b>
+    <pre id="m"></pre>
+  </div>
+
+<script>
+async function refresh() {
+  const q = await fetch("/api/observability/sqs").then(r => r.json());
+  document.getElementById("q").innerText =
+    `ApproximateNumberOfMessages: ${q.approximateNumberOfMessages} | NotVisible: ${q.approximateNumberOfMessagesNotVisible}`;
+
+  const f = await fetch("/api/observability/events-file").then(r => r.json());
+  document.getElementById("f").innerText =
+    `sizeBytes: ${f.sizeBytes} | lastWriteUtc: ${f.lastWriteUtc}`;
+
+  const m = await fetch("/api/observability/sqs/sample?max=1").then(r => r.json());
+  document.getElementById("m").innerText = JSON.stringify(m, null, 2);
+}
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>

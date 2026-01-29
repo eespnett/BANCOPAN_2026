@@ -1,9 +1,11 @@
-﻿using CasePan.Application;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using CasePan.Application;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace CasePan.Tests.Integration.Api;
 
@@ -11,33 +13,49 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        // Força ambiente de teste (não carrega appsettings.Development.json)
+        builder.UseEnvironment("Testing");
+
+        // E garante que publisher não escreve em arquivo durante testes
+        builder.ConfigureAppConfiguration((_, cfg) =>
+        {
+            cfg.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Events:Publisher"] = "noop",
+                ["Observability:ControllerEvents:Mode"] = "noop"
+            });
+        });
+
         builder.ConfigureServices(services =>
         {
-            // Troca o ViaCEP real por Fake (evita dependência de rede)
-            services.RemoveAll(typeof(IViaCepClient));
-            services.AddSingleton<IViaCepClient>(new FakeViaCepClient());
+            // Override do ViaCep para não depender de internet
+            services.AddSingleton<IViaCepClient, TestViaCepClient>();
         });
     }
-}
 
-internal sealed class FakeViaCepClient : IViaCepClient
-{
-    public Task<ViaCepResult?> ConsultarAsync(string cep, CancellationToken ct)
+    private sealed class TestViaCepClient : IViaCepClient
     {
-        var digits = new string((cep ?? "").Where(char.IsDigit).ToArray());
-        if (digits.Length != 8) return Task.FromResult<ViaCepResult?>(null);
-
-        // Use este CEP para simular "não encontrado"
-        if (digits == "00000000")
-            return Task.FromResult<ViaCepResult?>(new ViaCepResult { Erro = true });
-
-        return Task.FromResult<ViaCepResult?>(new ViaCepResult
+        public Task<ViaCepResult?> ConsultarAsync(string cep, CancellationToken ct)
         {
-            Logradouro = "Rua Teste",
-            Bairro = "Centro",
-            Localidade = "São Paulo",
-            Uf = "SP",
-            Erro = false
-        });
+            var digits = OnlyDigits(cep);
+
+            // Simula "cep inexistente"
+            if (digits == "00000000")
+                return Task.FromResult<ViaCepResult?>(new ViaCepResult {   Erro = true });
+
+            return Task.FromResult<ViaCepResult?>(new ViaCepResult
+            {
+                
+                Logradouro = "Praça da Sé",
+                
+                Bairro = "Sé",
+                Localidade = "São Paulo",
+                Uf = "SP",
+                Erro = false
+            });
+        }
+
+        private static string OnlyDigits(string? s)
+            => new string((s ?? "").Where(char.IsDigit).ToArray());
     }
 }

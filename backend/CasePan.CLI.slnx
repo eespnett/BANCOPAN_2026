@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Project Path="CasePan.Api/CasePan.Api.csproj" />
   <Project Path="CasePan.Application/CasePan.Application.csproj" />
   <Project Path="CasePan.Domain/CasePan.Domain.csproj" />

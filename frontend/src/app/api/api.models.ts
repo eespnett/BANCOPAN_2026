@@ -7,8 +7,7 @@ export interface Endereco {
   bairro?: string | null;
   localidade?: string | null;
   uf?: string | null;
-  createdAtUtc?: string;
-  // ViaCEP retorna { erro: true } quando o CEP não existe
+  createdAtUtc?: string; 
   erro?: boolean;
 }
 
